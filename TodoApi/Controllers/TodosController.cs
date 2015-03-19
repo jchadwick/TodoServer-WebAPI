@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using TodoApi.Models;
 using System.Web.Http.Cors;
+using System;
 
 namespace TodoApi.Controllers
 {
@@ -105,6 +106,47 @@ namespace TodoApi.Controllers
             await db.SaveChangesAsync();
 
             return CreatedAtRoute("GetTodo", new { id = todo.Id }, todo);
+        }
+
+        public enum TodoStateChange
+        {
+            Complete,
+            Uncomplete
+        }
+
+        // POST: api/Todos
+        [HttpPost, Route("{id}/{stateChange:regex(complete|uncomplete)}")]
+        [ResponseType(typeof(Todo))]
+        public async Task<IHttpActionResult> UpdateState(long id, string stateChange)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Todo todo = await Todos.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            var changeAction = (TodoStateChange)Enum.Parse(typeof(TodoStateChange), stateChange, true);
+            switch (changeAction) {
+                case TodoStateChange.Complete:
+                    todo.State = TodoState.Completed;
+                    todo.CompletedDate = DateTime.UtcNow;
+                    break;
+
+                case TodoStateChange.Uncomplete:
+                    todo.State = TodoState.Active;
+                    todo.CompletedDate = null;
+                    break;
+            }
+
+            await db.SaveChangesAsync();
+
+            return Ok();
         }
 
         // DELETE: api/Todos/5
