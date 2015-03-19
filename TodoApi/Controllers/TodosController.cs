@@ -58,7 +58,7 @@ namespace TodoApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!await TodoExists(id))
+            if (!await TodoExistsAsync(id))
             {
                 return NotFound();
             }
@@ -76,7 +76,7 @@ namespace TodoApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await TodoExists(id))
+                if (!TodoExists(id))
                 {
                     return NotFound();
                 }
@@ -131,9 +131,14 @@ namespace TodoApi.Controllers
             base.Dispose(disposing);
         }
 
-        private async Task<bool> TodoExists(long id)
+        private Task<bool> TodoExistsAsync(long id)
         {
-            return await Todos.AnyAsync(e => e.Id == id);
+            return Task.FromResult(TodoExists(id));
+        }
+
+        private bool TodoExists(long id)
+        {
+            return Todos.Any(e => e.Id == id);
         }
     }
 }
