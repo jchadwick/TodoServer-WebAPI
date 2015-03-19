@@ -130,6 +130,28 @@ namespace TodoApi.Controllers
             return Ok(completedTodoIds);
         }
 
+        [HttpPost, Route("ResetDemo")]
+        public async Task<IHttpActionResult> ResetDemo()
+        {
+            var idsToDelete = await Todos.Select(x => x.Id).ToArrayAsync();
+
+            foreach (var id in idsToDelete)
+            {
+                var todo = new Todo { Id = id };
+                db.Entry(todo).State = EntityState.Deleted;
+            }
+
+            db.Todos.AddRange(new[] {
+                new Todo { Name = "Dryclean cape" },
+                new Todo { Name = "Clean cave" },
+                new Todo { Name = "Save Gotham" },
+            });
+
+            await db.SaveChangesAsync();
+
+            return Ok();
+        }
+
 
         // POST: api/Todos
         [HttpPost, Route("{id}/{stateChange:regex(complete|uncomplete)}")]
