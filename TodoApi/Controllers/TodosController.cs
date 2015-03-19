@@ -34,7 +34,7 @@ namespace TodoApi.Controllers
         [Route("")]
         public IQueryable<Todo> GetTodos()
         {
-            return Todos;
+            return Todos.OrderBy(x => x.State).OrderBy(x => x.CreateDate);
         }
 
         // GET: api/Todos/5
@@ -114,6 +114,23 @@ namespace TodoApi.Controllers
             Uncomplete
         }
 
+        [HttpPost, Route("clear")]
+        public async Task<IHttpActionResult> ClearCompleted()
+        {
+            var completedTodoIds = await Todos.Where(x => x.State == TodoState.Completed).Select(x => x.Id).ToArrayAsync();
+
+            foreach (var id in completedTodoIds)
+            {
+                var todo = new Todo { Id = id };
+                db.Entry(todo).State = EntityState.Deleted;
+            }
+
+            await db.SaveChangesAsync();
+
+            return Ok(completedTodoIds);
+        }
+
+
         // POST: api/Todos
         [HttpPost, Route("{id}/{stateChange:regex(complete|uncomplete)}")]
         [ResponseType(typeof(Todo))]
@@ -132,7 +149,8 @@ namespace TodoApi.Controllers
             }
 
             var changeAction = (TodoStateChange)Enum.Parse(typeof(TodoStateChange), stateChange, true);
-            switch (changeAction) {
+            switch (changeAction)
+            {
                 case TodoStateChange.Complete:
                     todo.State = TodoState.Completed;
                     todo.CompletedDate = DateTime.UtcNow;
