@@ -7,9 +7,11 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TodoApi.Models;
+using System.Web.Http.Cors;
 
 namespace TodoApi.Controllers
 {
+    [EnableCors("*", "*", "*")]
     [RoutePrefix("todos")]
     public class TodosController : ApiController
     {

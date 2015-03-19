@@ -8,6 +8,7 @@ namespace TodoApi
     {
         public static void Register(HttpConfiguration config)
         {
+            config.EnableCors();
             config.MapHttpAttributeRoutes();
 
             var formatters = GlobalConfiguration.Configuration.Formatters;
