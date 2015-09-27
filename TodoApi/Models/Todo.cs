@@ -10,6 +10,16 @@ namespace TodoApi.Models
         [Required]
         public string Name { get; set; }
         public TodoState State { get; set; }
+        public bool Completed
+        {
+            get
+            {
+                return State == TodoState.Completed;
+            } set
+            {
+                State = value ? TodoState.Completed : TodoState.Active;
+            }
+        }
         public DateTime? CompletedDate { get; set; }
 
         [Required]
