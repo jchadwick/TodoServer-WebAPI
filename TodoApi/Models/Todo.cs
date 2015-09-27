@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Web;
 
 namespace TodoApi.Models
@@ -7,9 +8,13 @@ namespace TodoApi.Models
     public class Todo
     {
         public long Id { get; set; }
+
         [Required]
         public string Name { get; set; }
+
         public TodoState State { get; set; }
+
+        [NotMapped]
         public bool Completed
         {
             get
@@ -20,6 +25,7 @@ namespace TodoApi.Models
                 State = value ? TodoState.Completed : TodoState.Active;
             }
         }
+
         public DateTime? CompletedDate { get; set; }
 
         [Required]
