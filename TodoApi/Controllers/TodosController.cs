@@ -30,14 +30,14 @@ namespace TodoApi.Controllers
             }
         }
 
-        // GET: api/Todos
+        /// <summary>Get all of the current user's Todos</summary>
         [Route("")]
         public IQueryable<Todo> GetTodos()
         {
             return Todos.OrderBy(x => x.State).OrderBy(x => x.CreateDate);
         }
 
-        // GET: api/Todos/5
+        /// <summary>Get a specific Todo</summary>
         [Route("{id}", Name = "GetTodo")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> GetTodo(long id)
@@ -51,7 +51,8 @@ namespace TodoApi.Controllers
             return Ok(todo);
         }
 
-        // PUT: api/Todos/5
+        /// <summary>Update an existing Todo</summary>
+        /// <remarks>All you can really update is the Name</remarks>
         [Route("{id}")]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutTodo(long id, Todo todo)
@@ -61,17 +62,14 @@ namespace TodoApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!await TodoExistsAsync(id))
+            Todo existing = await Todos.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existing == null)
             {
                 return NotFound();
             }
 
-            if (id != todo.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(todo).State = EntityState.Modified;
+            existing.Name = todo.Name;
 
             try
             {
@@ -92,7 +90,7 @@ namespace TodoApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Todos
+        /// <summary>Create a new Todo</summary>
         [Route("")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> PostTodo(Todo todo)
@@ -114,6 +112,7 @@ namespace TodoApi.Controllers
             Uncomplete
         }
 
+        /// <summary>Removes all completed todos</summary>
         [HttpPost, Route("clear")]
         public async Task<IHttpActionResult> ClearCompleted()
         {
@@ -130,6 +129,9 @@ namespace TodoApi.Controllers
             return Ok(completedTodoIds);
         }
 
+        /// <summary>
+        /// Resets tasks to their original state (to start the demo over)
+        /// </summary>
         [HttpPost, Route("ResetDemo")]
         public async Task<IHttpActionResult> ResetDemo()
         {
@@ -153,7 +155,8 @@ namespace TodoApi.Controllers
         }
 
 
-        // POST: api/Todos
+        /// <summary>Updates the state of a Todo</summary>
+        /// <param name="stateChange">The new state of the Todo: (complete|uncomplete)</param>
         [HttpPost, Route("{id}/{stateChange:regex(complete|uncomplete)}")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> UpdateState(long id, string stateChange)
