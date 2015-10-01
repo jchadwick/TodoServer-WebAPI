@@ -16,6 +16,10 @@ namespace TodoApi
             GlobalConfiguration.Configuration 
                 .EnableSwagger(c =>
                     {
+                        var xmlDoc = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, @"bin\TodoApi.XML");
+
+                        c.IncludeXmlComments(xmlDoc);
+
                         // By default, the service root url is inferred from the request used to access the docs.
                         // However, there may be situations (e.g. proxy and load-balanced environments) where this does not
                         // resolve correctly. You can workaround this by providing your own code to determine the root URL.

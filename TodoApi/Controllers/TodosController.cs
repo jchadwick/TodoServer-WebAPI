@@ -31,6 +31,7 @@ namespace TodoApi.Controllers
         }
 
         /// <summary>Get all of the current user's Todos</summary>
+        /// <returns>All of the current user's Todos</returns>
         [Route("")]
         public IQueryable<Todo> GetTodos()
         {
@@ -38,6 +39,8 @@ namespace TodoApi.Controllers
         }
 
         /// <summary>Get a specific Todo</summary>
+        /// <param name="id">The ID of the Todo to retrieve</param>
+        /// <returns>The Todo with the given ID</returns>
         [Route("{id}", Name = "GetTodo")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> GetTodo(long id)
@@ -91,6 +94,8 @@ namespace TodoApi.Controllers
         }
 
         /// <summary>Create a new Todo</summary>
+        /// <param name="todo">The Todo to create</param>
+        /// <returns>The newly-created Todo</returns>
         [Route("")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> PostTodo(Todo todo)
@@ -156,6 +161,7 @@ namespace TodoApi.Controllers
 
 
         /// <summary>Updates the state of a Todo</summary>
+        /// <param name="id">The id of the Todo to update</param>
         /// <param name="stateChange">The new state of the Todo: (complete|uncomplete)</param>
         [HttpPost, Route("{id}/{stateChange:regex(complete|uncomplete)}")]
         [ResponseType(typeof(Todo))]
@@ -192,7 +198,11 @@ namespace TodoApi.Controllers
             return Ok();
         }
 
-        // DELETE: api/Todos/5
+        /// <summary>
+        /// Delete a Todo
+        /// </summary>
+        /// <param name="id">The ID of the Todo to delete</param>
+        /// <returns>The deleted Todo</returns>
         [Route("{id}")]
         [ResponseType(typeof(Todo))]
         public async Task<IHttpActionResult> DeleteTodo(long id)
